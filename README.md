@@ -15,7 +15,7 @@ I developed this server mainly by myself, but had minor help of different friend
 
 · **Branding** - Branding was my first network server. It started off as a normal plot generator server, but expanded into a network.
 This server was not just me though. I had a lot of help from my partner at the time, "MEXIO".
-The server was passed down to a friend of both of us, and has hada lot of remakes and rebranding since then, but is now known as "FISHLERS".
+The server was passed down to a friend of both of us, and has had a lot of remakes and rebranding since then, but is now known as "FISHLERS".
 
 
 **History And Experience With Skript:**
