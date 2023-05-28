@@ -1,6 +1,4 @@
-**ABOUT ME:**
-
-Previous Experiences In Development & Moderation:
+**Previous Experiences In Development & Moderation:**
 
 · **Elestra** - Elestra was one of the first and biggest minehut plot generator servers in it's time, but was shut down due to issues with the management team.
 I worked as a support team member for a long period of time under the names of "Madelyn" and "Stephen".
@@ -20,7 +18,7 @@ This server was not just me though. I had a lot of help from my partner at the t
 The server was passed down to a friend of both of us, and has hada lot of remakes and rebranding since then, but is now known as "FISHLERS".
 
 
-History And Experience With Skript:
+**History And Experience With Skript:**
 
 I started learning skript back in late 2020. I was done with needing other people to skript for me, and I wanted to become independent.
 It started simple with minehut tutorials, and a lot of errors, but it didn't take me long before I got the hang of it.
