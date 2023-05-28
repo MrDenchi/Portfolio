@@ -18,3 +18,10 @@ I developed this server mainly by myself, but had minor help of different friend
 · **Branding** - Branding was my first network server. It started off as a normal plot generator server, but expanded into a network.
 This server was not just me though. I had a lot of help from my partner at the time, "MEXIO".
 The server was passed down to a friend of both of us, and has hada lot of remakes and rebranding since then, but is now known as "FISHLERS".
+
+
+History And Experience With Skript:
+
+I started learning skript back in late 2020. I was done with needing other people to skript for me, and I wanted to become independent.
+It started simple with minehut tutorials, and a lot of errors, but it didn't take me long before I got the hang of it.
+I have now owned and developed a lot of servers, and I'm still an active developer to this day.
