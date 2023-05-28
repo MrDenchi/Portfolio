@@ -1,0 +1,55 @@
+# CUSTOM DELAYED SPAWN
+#
+# VERSION 1.0
+#
+# Copyright (c)  [Denchi CO]
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+options:
+  Prefix: &e&lSPAWN
+  SecondsDelay: 5
+  Waiting-Sound: block.note_block.bell
+  Success-Sound: entity.experience_orb.pickup
+  Error-Sound: entity.villager.hurt
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+command /spawn:
+  trigger:
+
+    if {@SecondsDelay} = 0:
+      teleport player to {spawn::location}
+      send "{@Prefix} &8» &7Teleported To Spawn" to player
+      play sound "{@Success-Sound}" to player
+      stop
+
+    set {_cord} to "%player's x-coordinate%,%player's y-coordinate%,%player's z-coordinate%"
+    set {_time} to ({@SecondsDelay}+1)
+    while "%player's x-coordinate%,%player's y-coordinate%,%player's z-coordinate%" is {_cord}:
+      remove 1 from {_time}
+      if {_time} is 0:
+    
+        teleport player to {spawn::location}
+        send action bar "{@Prefix} &8» &7Teleported To Spawn" to player
+        play sound "{@Success-Sound}" to player
+        stop
+
+      else:
+        send action bar "{@Prefix} &8» &7You need to wait &e%{_time}% &7more second" to player
+        play sound "{@Waiting-Sound}" to player
+        wait 1 second
+    send action bar "{@Prefix} &8» &cOops You Moved!" to player
+    play sound "{@Error-Sound}" to player
+
+
+
+command /setspawn:
+  permission: op
+  trigger:
+    set {spawn::location} to location of player
+    send "{@Prefix} &8>> &7Set The Spawn Location To You!" to player
