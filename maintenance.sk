@@ -1,0 +1,63 @@
+# CUSTOM WHITELIST/MAINTENANCE
+#
+# VERSION 1.0
+#
+# Copyright (c)  [Denchi CO]
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+options:
+  Prefix: &3&lMaintenance
+  Bypass-Perm: maintenance.bypass
+  Admin-Perm: maintenance.admin
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+command /maintenance <text> [<text>]:
+  permission: {@Admin-Perm}
+  trigger:
+
+    if arg-1 is "toggle":
+      if {maintenance::active} is not set:
+        set {maintenance::active} to true
+        send "{@Prefix} &8» &aMaintenance Is Now Active!" to player
+      else:
+        delete {maintenance::active}
+        send "{@Prefix} &8» &cMaintenance Is Now Disabled!" to player
+
+    if arg-1 is "on":
+      set {maintenance::active} to true
+      send "{@Prefix} &8» &aMaintenance Is Now Active!" to player
+
+    if arg-1 is "off":
+      delete {maintenance::active}
+      send "{@Prefix} &8» &cMaintenance Is Now Disabled!" to player
+
+    if arg-1 is "add":
+      if arg-2 is set:
+        add arg-2 parsed as offline player to {maintenance::list::*}
+        send "{@Prefix} &8» &7Added &a%arg-2% &7To Maintenance!" to player
+
+    if arg-1 is "remove":
+      if arg-2 is set:
+        remove arg-2 from {maintenance::list::*}
+        send "{@Prefix} &8» &7Removed &c%arg-2% &7From Maintenance!" to player
+
+    if arg-1 is "list":
+      send "{@Prefix} &8» &f%{maintenance::list::*}% &f(%size of {maintenance::list::*}%&f)" to player
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+on tab complete of "/maintenance":
+  set tab completions for position 1 to "toggle", "on", "off", "add", "remove" and "list"
+  if tab arg-1 = "remove":
+    set tab completions for position 2 to {maintenance::list::*}
+  if tab arg-1 = "add":
+    set tab completions for position 2 to offline players
+
