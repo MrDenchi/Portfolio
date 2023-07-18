@@ -9,7 +9,7 @@
 
 
 options:
-  Prefix: &3&lMaintenance
+  Prefix: &6&lMaintenance
   Bypass-Perm: maintenance.bypass
   Admin-Perm: maintenance.admin
 
