@@ -1,13 +1,3 @@
-**__Life Stats:__**
-
-· **Age:** 16
-
-· **Known Languages:** Norwegian, English, Swedish, Danish & Spanish (Python & Skript)
-
-· **Nationality:** Norwegian
-
-
-
 **__Previous Experiences In Development & Moderation:__**
 
 · **Elestra** - Elestra was one of the first and biggest minehut plot generator servers in it's time, but was shut down due to issues with the management team.
@@ -27,9 +17,16 @@ I developed this server mainly by myself, but had minor help of different friend
 This server was not just me though. I had a lot of help from my partner at the time, "MEXIO".
 The server was passed down to a friend of both of us, and has had a lot of remakes and rebranding since then, but is now known as "Enginetic" which I infact own.
 
+
  
 **__History And Experience With Skript:__**
 
 I started learning skript back in late 2020. I was done with needing other people to skript for me, and I wanted to become independent.
 It started simple with minehut tutorials, and a lot of errors, but it didn't take me long before I got the hang of it.
 I have now owned and developed a lot of servers, and I'm still an active developer to this day.
+
+
+
+**__LIFE INFORMATION:__**
+
+· I'm currently 16 years old, as of 2023. I was born and raised in Norway, where I currently live, and for the moment, I will be able to communicate with other people in Norwegian, English, Swedish, Danish & Spanish. The only two skript languages I have worked with and are qualified enough with are Skript and Python.
