@@ -1,8 +1,11 @@
 **__Life Stats:__**
 
 · **Age:** 16
+
 · **Known Languages:** Norwegian, English, Swedish, Danish & Spanish (Python & Skript)
+
 · **Nationality:** Norwegian
+
 
 
 **__Previous Experiences In Development & Moderation:__**
