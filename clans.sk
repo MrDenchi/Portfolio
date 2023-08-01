@@ -1,0 +1,276 @@
+# CUSTOM CLANS
+#
+# VERSION 1.1
+#
+# Copyright (c)  [Denchi CO]
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+options:
+  Prefix: &6&lSERVER
+  Clans: &6&lCLANS
+  ClanMaxCapacity: 4
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+command /clan [<string>] [<string>]:
+  aliases: /clans
+  trigger:
+
+    if arg-1 is "create":
+      if arg-2 is set:
+        if {clan::%player's uuid%} is not set:
+          clanCommand(player, arg-1, lowercase arg-2)
+        else:
+          send "{@Clans} &8» &cYou can't be in a clan while executing!" to player
+      else:
+        send "{@Clans} &8» &c/clan create [NAME]" to player
+
+
+    if arg-1 is "invite":
+      if arg-2 is set:
+        if {clan::%player's uuid%} is set:
+          clanCommand(player, arg-1, arg-2)
+        else:
+          send "{@Clans} &8» &cYou need to be in a clan to execute!" to player
+      else:
+        send "{@Clans} &8» &c/clan invite [USER]" to player
+
+
+    if arg-1 is "join":
+      if arg-2 is set:
+        if {clan::%player's uuid%} is not set:
+          clanCommand(player, arg-1, arg-2)
+        else:
+          send "{@Clans} &8» &cYou can't be in a clan while executing!" to player
+      else:
+        send "{@Clans} &8» &c/clan join [CLAN]" to player
+
+
+    if arg-1 is "chat" or "message":
+      if arg-2 is set:
+        if {clan::%player's uuid%} is set:
+          clanCommand(player, arg-1, arg-2)
+        else:
+          send "{@Clans} &8» &cYou need to be in a clan to execute!" to player
+      else:
+        send "{@Clans} &8» &c/clan chat [MESSAGE]" to player
+
+
+    if arg-1 is "delete":
+      if {clan::%{clan::%player's uuid%}%::admin} is player's uuid:
+        clanCommand(player, arg-1, arg-2)
+      else:
+        send "{@Clans} &8» &cYou need to be a clan admin to do this!" to player
+
+
+    if arg-1 is "kick":
+      if arg-2 is set:
+        if {clan::%{clan::%player's uuid%}%::admin} is player's uuid:
+          stop if arg-2 = player
+          clanCommand(player, arg-1, arg-2)
+        else:
+          send "{@Clans} &8» &cYou need to be a clan admin to do this!" to player
+      else:
+        send "{@Clans} &8» &c/clan kick [USER]" to player
+
+
+    if arg-1 is "info":
+      if arg-2 is set:
+        clanCommand(player, arg-1, arg-2)
+      else:
+        clanCommand(player, arg-1)
+
+
+    if arg-1 is "leave":
+      if {clan::%player's uuid%} is set:
+        if {clan::%{clan::%player's uuid%}%::admin} is not player's uuid:
+          clanCommand(player, arg-1)
+        else:
+          send "{@Clans} &8» &cYou can only delete a team you have created!" to player
+      else:
+        send "{@Clans} &8» &cYou need to be in a clan to execute!" to player
+
+
+    if arg-1 is "help":
+      clanCommand(player, "help")
+    if arg-1 is not set:
+      clanCommand(player, "help")
+    
+
+
+on tab complete of "/clan" and "/clans":
+  loop {clan::%{clan::%player's uuid%}%::members::*}:
+    add (loop-value parsed as offline player) to {_x::*}
+  remove player from {_x::*}
+  set tab completions for position 1 to "create", "invite", "join", "chat", "message", "delete", "kick", "info" and "leave"
+  if tab arg-1 = "create":
+    set tab completions for position 2 to "[NAME]"
+  if tab arg-1 = "invite":
+    set tab completions for position 2 to offline players
+  if tab arg-1 = "join":
+    set tab completions for position 2 to {clan::invitations::%player's uuid%::*}
+  if tab arg-1 = "chat" or "message":
+    set tab completions for position 2 to "[MESSAGE]"
+  if tab arg-1 = "kick":
+    set tab completions for position 2 to {_x::*}
+  if tab arg-1 = "info":
+    set tab completions for position 2 to {clan::list::*}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function clanCommand(player:player, first:string, second:string=""):
+
+  if {_first} = "create":
+    if {clan::list::*} does not contain {_second}:
+      set {clan::%{_player}'s uuid%} to {_second}
+      add {_second} to {clan::list::*}
+      set {clan::%{_second}%::admin} to {_player}'s uuid
+      add {_player}'s uuid to {clan::%{_second}%::members::*}
+      send "{@Clans} &8» &aCreated Clan &7(&2%{_second}%&7)" to {_player}
+    else:
+      send "{@Clans} &8» &cA clan already exists with the name &4%{_second}%" to {_player}
+
+
+  if {_first} = "invite":
+    if (size of {clan::%{clan::%{_player}'s uuid%}%::members::*}) < {@ClanMaxCapacity}:
+      if {clan::%{clan::%{_player}'s uuid%}%::invited::*} does not contain uuid of ({_second} parsed as offline player):
+        stop if {clan::%{clan::%{_player}'s uuid%}%::members::*} contains uuid of ({_second} parsed as offline player)
+        add uuid of ({_second} parsed as offline player) to {clan::%{clan::%{_player}'s uuid%}%::invited::*}
+        add {clan::%{_player}'s uuid%} to {clan::invitations::%uuid of ({_second} parsed as offline player)%::*}
+        send "{@Clans} &8» &aInvited &2%({_second} parsed as offline player)% &ato &2%{clan::%{_player}'s uuid%}%" to {_player}
+        send "{@Clans} &8» &aYou have been invited to &2%{clan::%{_player}'s uuid%}%" to ({_second} parsed as offline player)
+        wait 10 minutes
+        remove uuid of ({_second} parsed as offline player) from {clan::%{clan::%{_player}'s uuid%}%::invited::*}
+        remove {clan::%{_player}'s uuid%} from {clan::invitations::%uuid of ({_second} parsed as offline player)%::*}
+      else:
+        send "{@Clans} &8» &cUser is already invited to the clan!" to {_player}
+    else:
+      send "{@Clans} &8» &cThe clan has reached the max capacity!" to {_player}
+
+
+  if {_first} = "join":
+    if (size of {clan::%{_second}%::members::*}) < {@ClanMaxCapacity}:
+      if {clan::%{_second}%::invited::*} contains {_player}'s uuid:
+        set {clan::%{_player}'s uuid%} to {_second}
+        add {_player}'s uuid to {clan::%{clan::%{_player}'s uuid%}%::members::*}
+        remove {_player}'s uuid from {clan::%{clan::%{_player}'s uuid%}%::invited::*}
+        remove {clan::%{_player}'s uuid%} from {clan::invitations::%uuid of ({_second} parsed as offline player)%::*}
+        send "{@Clans} &8» &aJoined a new clan! &7(&2%{_second}%&7)" to {_player}
+      else:
+        send "{@Clans} &8» &cUser is already invited to the clan!" to {_player}
+    else:
+      send "{@Clans} &8» &cThe clan has reached the max capacity!" to {_player}
+
+
+  if {_first} = "chat" or "message":
+    loop {clan::%{clan::%{_player}'s uuid%}%::members::*}:
+      send "{@Clans} &e(&6%{clan::%{_player}'s uuid%}%&e) &8| &e%{_player}% &8» &e%{_second}%" to loop-value parsed as player
+
+  if {_first} = "delete":
+    set {_x} to {clan::%{_player}'s uuid%}
+    remove {_x} from {clan::list::*}
+    loop {clan::%{_x}%::members::*}:
+      send "{@Clans} &e(&6%{_x}%&e) &8| &cClan Deleted!" to (loop-value parsed as player)
+      delete {clan::%loop-value%}
+    delete {clan::%{_x}%::*}
+
+  if {_first} = "leave":
+    send "{@Clans} &8» &cLeft your team! &7(&4%{clan::%{_player}'s uuid%}%&7)" to {_player}
+    remove {_player}'s uuid from {clan::%{clan::%{_player}'s uuid%}%::members::*}
+    delete {clan::%{_player}'s uuid%}
+
+  if {_first} is "kick":
+    if {clan::%{clan::%{_player}'s uuid%}%::members::*} contains uuid of ({_second} parsed as offline player):
+      send "{@Clans} &8» &cKicked From Team! &7(&4%{clan::%{_player}'s uuid%}%&7)" to {_second} parsed as player
+      send "{@Clans} &8» &cKicked &4%{_second} parsed as player% &cFrom Team! &7(&4%{clan::%{_player}'s uuid%}%&7)" to {_player}
+      remove uuid of ({_second} parsed as offline player) from {clan::%{clan::%{_player}'s uuid%}%::members::*}
+      delete {clan::%uuid of ({_second} parsed as offline player)%}
+
+  if {_first} = "info":
+    if {_second} is not "":
+      if (size of {clan::%{_second}%::members::*}) > 0:
+        set {_members} to ""
+        set {_c} to 1
+        loop {clan::%{_second}%::members::*}:
+          set {_members} to "%{_members}%%loop-value parsed as offline player%"
+          if {_c} < (size of {clan::%{_second}%::members::*}):
+            set {_members} to "%{_members}%, "
+          add 1 to {_c}
+        send "&7&l&m         &7&l[ &6&l%uppercase {_second}% &7&l]&7&l&m         " to {_player}
+        send "" to {_player}
+        send "&7・ Admin: &e%{clan::%{_second}%::admin} parsed as offline player%" to {_player}
+        send "&7・ Members: &e%{_members}%" to {_player}
+        send "" to {_player}
+        send "&7&l&m         &7&l[ &6&l%uppercase {_second}% &7&l]&7&l&m         " to {_player}
+      else:
+        send "{@Clans} &8» &cTeam not found!" to {_player}
+    else:
+      if {clan::%{_player}'s uuid%} is set:
+        set {_members} to ""
+        set {_c} to 1
+        set {_second} to {clan::%{_player}'s uuid%}
+        loop {clan::%{_second}%::members::*}:
+          set {_members} to "%{_members}%%loop-value parsed as offline player%"
+          if {_c} < (size of {clan::%{_second}%::members::*}):
+            set {_members} to "%{_members}%, "
+          add 1 to {_c}
+        send "&7&l&m         &7&l[ &6&l%uppercase {_second}% &7&l]&7&l&m         " to {_player}
+        send "" to {_player}
+        send "&7・ Admin: &e%{clan::%{_second}%::admin} parsed as offline player%" to {_player}
+        send "&7・ Members: &e%{_members}%" to {_player}
+        send "" to {_player}
+        send "&7&l&m         &7&l[ &6&l%uppercase {_second}% &7&l]&7&l&m         " to {_player}
+      else:
+        send "{@Clans} &8» &cYou need to be in a team!" to {_player}
+
+
+  if {_first} is "help":
+    send "&6・ &eClan Command Help &6・" to {_player}
+    send "&7・ /clan create (NAME)" to {_player}
+    send "&7・ /clan invite (USER)" to {_player}
+    send "&7・ /clan join (CLAN)" to {_player}
+    send "&7・ /clan chat (MESSAGE)" to {_player}
+    send "&7・ /clan kick (USER)" to {_player}
+    send "&7・ /clan info (CLAN)" to {_player}
+    send "&7・ /clan delete" to {_player}
+    send "&7・ /clan leave" to {_player}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+on join:
+  delete {clan::invitations::%player's uuid%::*}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+command /adminclan <string> [<string>]:
+  permission: admin.clan
+  trigger:
+    
+    if arg-1 is "reset":
+      delete {clan::*}
+      send "{@Clans} &8» &cReset All Clans!" to player
+
+    if arg-1 is "delete":
+      if arg-2 is set:
+        remove {clan::%arg-2%} from {clan::list::*}
+        delete {clan::%arg-2%::*}
+        loop {clan::%arg-2%::members::*}:
+          delete {clan::%loop-value%}
+        send "{@Clans} &8» &cDeleted Clan!" to player
+
+
+on tab complete of "/adminclan":
+  set tab completions for position 1 to "reset" and "delete"
+  if tab arg-1 = "delete":
+    set tab completions for position 2 to {clan::list::*}
