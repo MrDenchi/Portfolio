@@ -1,0 +1,267 @@
+# CUSTOM GENERATORS
+#
+# VERSION 1.2
+#
+# Copyright (c)  [Denchi CO]
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+options:
+  DropTime: 16 seconds
+  GenStartCap: 20
+  GenPrefix: &3&lGENS
+  Economy: balance
+  EconomyDisplay: $
+
+
+on load:
+  delete {genlist::*}
+  delete {generators::*}
+  registerGenerator(1, coal ore, coal, "<##505050>Basic Coal Generator &8[&6T. I&8]", 2500, 5)
+  registerGenerator(2, iron ore, iron ingot,"<##CFCFCF>Basic Iron Generator &8[&6T. II&8]", 6000, 10)
+  registerGenerator(3, copper ore, copper ingot, "<##E1A25A>Basic Copper Generator &8[&6T. III&8]", 12500, 20)
+  registerGenerator(4, lapis ore, lapis, "<##2E68D6>Basic Lapis Generator &8[&6T. IV&8]", 25000, 30)
+  registerGenerator(5, redstone ore, redstone, "<##ED1E1E>Basic Redstone Generator &8[&6T. V&8]", 55000, 40)
+  registerGenerator(6, gold ore, golden ingot, "<##E1AE1D>Basic Gold Generator &8[&6T. VI&8]", 90000, 50)
+  registerGenerator(7, diamond ore, diamond, "<##07FFF4>Basic Diamond Generator &8[&6T. VII&8]", 125000, 60)
+  registerGenerator(8, emerald ore, emerald, "<##26E30C>Basic Emerald Generator &8[&6T. VIII&8]", 175000, 70)
+  registerGenerator(9, ancient debris, netherite ingot, "<##955217>Basic Netherite Generator &8[&6T. IX&8]", 350000, 80)
+  registerGenerator(10, coal block, coal, "<##505050>Super Coal Generator &8[&6T. X&8]", 600000, 90)
+  registerGenerator(11, iron block, iron ingot,"<##CFCFCF>Super Iron Generator &8[&6T. XI&8]", 1000000, 100)
+  registerGenerator(12, copper block, copper ingot, "<##E1A25A>Super Copper Generator &8[&6T. XII&8]", 1500000, 125)
+  registerGenerator(13, lapis block, lapis, "<##2E68D6>Super Lapis Generator &8[&6T. XIII&8]", 2500000, 150)
+  registerGenerator(14, redstone block, redstone, "<##ED1E1E>Super Redstone Generator &8[&6T. XIV&8]", 4500000, 175)
+  registerGenerator(15, gold block, golden ingot, "<##E1AE1D>Super Gold Generator &8[&6T. XV&8]", 7500000, 200)
+  registerGenerator(16, diamond block, diamond, "<##07FFF4>Super Diamond Generator &8[&6T. XVI&8]", 12500000, 250)
+  registerGenerator(17, emerald block, emerald, "<##26E30C>Super Emerald Generator &8[&6T. XVII&8]", 50000000, 300)
+  registerGenerator(18, netherite block, netherite ingot, "<##955217>Super Netherite Generator &8[&6T. XVIII&8]", 100000000, 350)
+
+  set {genlist::amount} to size of {generators::*}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+on join:
+  set {gen::cap::%player's uuid%} to {@GenStartCap} if {gen::cap::%player's uuid%} is not set
+
+
+on place:
+  if event is not cancelled:
+    loop {genlist::amount} times:
+      if event-block is {genlist::%loop-value%::block}:
+        if size of {gen::placed::%player's uuid%::*} < {gen::cap::%player's uuid%}:
+          placeGenerator(player, location of event-block, loop-value)
+        else:
+          cancel event
+          play sound "block.note_block.bass" to player
+          send "{@GenPrefix} &8» &cMax Generator Slots!" to player
+
+  
+on left click:
+  if event is not cancelled:
+    loop {genlist::amount} times:
+      if event-block is {genlist::%loop-value%::block}:
+        stop if {generator::owner::%location of event-block%} is not set
+        if {generator::owner::%location of event-block%} is player's uuid:
+          breakGenerator(player, location of event-block)
+        else:
+          cancel event
+          play sound "block.note_block.bass" to player
+          send "{@GenPrefix} &8» &cNot Your Generator!" to player
+
+
+on right click:
+  if event is not cancelled:
+    if player is sneaking:
+      loop ({genlist::amount}-1) times:
+        if event-block is {genlist::%loop-value%::block}:
+          if {generator::owner::%location of event-block%} is player's uuid:
+            if {delay::%player's uuid%} is not set:
+              upgradeGenerator(player, location of event-block)
+            else:
+              cancel event
+          else:
+            cancel event
+            play sound "block.note_block.bass" to player
+            send "{@GenPrefix} &8» &cNot Your Generator!" to player
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+command /genlist:
+  trigger:
+    listGenerator(player)
+
+
+command /resetallgens [<player>]:
+  permission: op
+  trigger:
+    if arg-1 is set:
+      set {_player} to arg-1
+    else:
+      set {_player} to player
+    resetGenerator({_player}, true)
+
+
+command /fixgens:
+  permission: gen.fixgens
+  trigger:
+    resetGenerator(player, true, 1 tick)
+
+
+command /setgens <player> <number>:
+  permission: gen.setgens
+  trigger:
+    set {gen::cap::%arg-1's uuid%} to arg-2
+
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+every {@DropTime}:
+  loop all players:
+    loop {gen::placed::%loop-value-1's uuid%::*}:
+      if block at loop-value-2 is not {genlist::%{generator::version::%loop-value-2%}%::block}:
+        delete {generator::owner::%loop-value-2%}
+        delete {generator::version::%loop-value-2%}
+        remove loop-value-2 from {gen::placed::%loop-value-1's uuid%::*}
+      else:
+        drop {genlist::%{generator::version::%loop-value-2%}%::itemdrop} named "&6{@EconomyDisplay}%{genlist::%{generator::version::%loop-value-2%}%::drop}%" with lore "&7<##C1C0C0>Sell with &e/sell" above loop-value-2 without velocity
+      
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function getGenerator(version:number, amount:number=1) :: item:
+  return {_amount} of {genlist::%{_version}%::block} named "%{genlist::%{_version}%::name}%" with lore "", "<##B2DDF0>&lGenerator Info:", "&7- Upgrade Price: &6{@EconomyDisplay}%formatgens({genlist::%{_version}%::upgrade})%" and "&7- Item Value: &6{@EconomyDisplay}%formatgens({genlist::%{_version}%::drop})%"
+
+
+function registerGenerator(version:number, genblock:itemtype, gendrop:itemtype, genname:text, upgrade:number, drop:number):
+  set {genlist::%{_version}%::block} to {_genblock}
+  set {genlist::%{_version}%::itemdrop} to {_gendrop}
+  set {genlist::%{_version}%::name} to {_genname}
+  set {genlist::%{_version}%::upgrade} to {_upgrade}
+  set {genlist::%{_version}%::drop} to {_drop}
+  add ("%{_genblock}%,%{_gendrop}%,%{_genname}%,%{_upgrade}%,%{_drop}%") to {generators::*}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function placeGenerator(player:player, location:location, version:number):
+  set {generator::owner::%{_location}%} to uuid of {_player}
+  set {generator::version::%{_location}%} to {_version}
+  add {_location} to {gen::placed::%uuid of {_player}%::*}
+  play sound "block.note_block.chime" to {_player}
+  send action bar "{@GenPrefix} &8» &7%size of {gen::placed::%uuid of {_player}%::*}%&8/&7%{gen::cap::%uuid of {_player}%}%" to {_player}
+
+
+function breakGenerator(player:player, location:location):
+  set block at {_location} to air
+  give {_player} 1 of getGenerator({generator::version::%{_location}%})
+  delete {generator::owner::%{_location}%}
+  delete {generator::version::%{_location}%}
+  remove {_location} from {gen::placed::%uuid of {_player}%::*}
+  play sound "block.note_block.cow_bell" to {_player}
+  send action bar "{@GenPrefix} &8» &7%size of {gen::placed::%uuid of {_player}%::*}%&8/&7%{gen::cap::%uuid of {_player}%}%" to {_player}
+
+
+function upgradeGenerator(player:player, location:location):
+  if {{@Economy}::%uuid of {_player}%} >= {genlist::%{generator::version::%{_location}%}%::upgrade}:
+    remove {genlist::%{generator::version::%{_location}%}%::upgrade} from {{@Economy}::%uuid of {_player}%}
+    add 1 to {generator::version::%{_location}%}
+    set block at {_location} to {genlist::%{generator::version::%{_location}%}%::block}
+    play sound "block.note_block.flute" to {_player}
+    send action bar "{@GenPrefix} &8» &aUpgraded Generator!" to {_player}
+    enableGenDelay({_player}, 2 ticks)
+  else:
+    set {_need} to ({genlist::%{generator::version::%{_location}%}%::upgrade}-{{@Economy}::%uuid of {_player}%})
+    play sound "block.note_block.bass" to {_player}
+    send action bar "{@GenPrefix} &8» &c-{@EconomyDisplay}%format({_need})%&c!" to {_player}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function listGenerator(player:player, page:number=1):
+  set {_pagestart} to ({_page}*28-27)
+  create gui with virtual chest inventory with 6 rows named "<##46AAD6>Generator List &8[&ePAGE %{_page}%&8]":
+    format gui slot (integers between 0 and 60) with gray stained glass pane named "&f"
+    format gui slot (integers between 10 and 16) with light gray stained glass pane named "&f"
+    format gui slot (integers between 19 and 25) with light gray stained glass pane named "&f"
+    format gui slot (integers between 28 and 34) with light gray stained glass pane named "&f"
+    format gui slot (integers between 37 and 43) with light gray stained glass pane named "&f"
+
+    format gui slot 49 with barrier named "&c&lCLOSE" with lore "", "&8 » &cClick To Close" and "":
+      close inventory of {_player}
+
+    if {_page} > 1:
+      format gui slot 48 with arrow named "&cPrevious Page" with lore "", "&8 » &eClick To Open" and "":
+        listGenerator({_player}, ({_page}-1))
+
+    if size of {generators::*} > ({_pagestart}+27):
+      format gui slot 50 with arrow named "&aNext Page" with lore "", "&8 » &eClick To Open" and "":
+        listGenerator({_player}, ({_page}+1))
+
+    set {_slot} to 10
+    set {_c} to 1
+    loop {generators::*}:
+
+      #CHECK PAGE
+      if {_start} is not set:
+        if {_c} = {_pagestart}:
+          set {_start} to true
+        else:
+          add 1 to {_c} 
+      if {_start} is true:
+
+        set {_gen::*} to loop-value split at ","
+        format gui slot {_slot} with getGenerator({_c}):
+        #format gui slot {_slot} with {_gen::1} parsed as itemtype named "%{_gen::3}%"  with lore "", "<##B2DDF0>&lGenerator Info:", "&7- Upgrade Price: &6{@EconomyDisplay}%formatgens({_gen::4} parsed as number)%" and "&7- Item Value: &6{@EconomyDisplay}%formatgens({_gen::5} parsed as number)%":
+          if {_player} has permission "op":
+            give {_player} getGenerator({_c})
+
+        add 1 to {_slot}
+        add 1 to {_c}
+        set {_slot} to 19 if {_slot} is 17
+        set {_slot} to 28 if {_slot} is 26
+        set {_slot} to 37 if {_slot} is 35
+        stop loop if {_slot} is 44
+
+  open last gui to {_player}
+
+
+function resetGenerator(player:player, giveback:boolean=false, delay:timespan=0 ticks):
+  loop {gen::placed::%uuid of {_player}%::*}:
+    if {_giveback} is true:
+      give {_player} 1 of getGenerator({generator::version::%loop-value%})
+    set block at loop-value to air
+    delete {generator::version::%loop-value%}
+    delete {generator::owner::%loop-value%}
+    remove loop-value from {gen::placed::%uuid of {_player}%::*}
+    play sound "block.note_block.cow_bell" to {_player}
+    send action bar "{@GenPrefix} &8» &7%size of {gen::placed::%uuid of {_player}%::*}%&8/&7%{gen::cap::%uuid of {_player}%}%" to {_player}
+    wait {_delay}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function formatgens(n: number) :: text:
+    set {_data} to "VD,63|ND,60|OD,57|SeD,54|SD,51|QD,48|QTD,45|TD,42|DD,39|UD,36|D,33|N,30|OT,27|ST,24|S,21|QT,18|Q,15|T,12|B,9|M,6|k,3"
+    loop split {_data} at "|":
+        set {_s::*} to split loop-value at ","
+        {_n} >= 10 ^ {_s::2} parsed as number
+        return "%{_n} / 10 ^ {_s::2} parsed as number%%{_s::1}%"
+    return "%{_n}%"
+
+
+function enableGenDelay(player:player, time:timespan):
+  set {delay::%uuid of {_player}%} to true
+  wait {_time}
+  delete {delay::%uuid of {_player}%}
