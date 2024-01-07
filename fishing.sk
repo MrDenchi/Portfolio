@@ -1,0 +1,371 @@
+# CUSTOM FISHING
+#
+# VERSION 1.0
+#
+# Copyright (c)  [Denchi CO]
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+options:
+  Prefix: &3&lCodGen
+  Fish: &b&lFISHING
+
+on load:
+  set {!fish::enchantment::*} to "Fortune", "Multiplier", "Speed", "Key Finder", "Lootbox Finder"
+  set {!fish::enchantmentPrefix::*} to "&bBigger Fishes", "&3Increased Pricing", "&eFaster Fishing", "&2Key Finder", "&aLootbox Finder"
+  set {!fish::enchantmentItems::*} to (pufferfish with all flags hidden), golden apple, (trident with all flags hidden), tripwire hook, lime shulker box
+  set {!fish::enchantmentDescriptions::*} to "Increases the size of the fishes you catch.", "Increases value of the fishes you catch.", "Increases the speed of your fishing.", "Gives you different keys.", "Gives you different lootboxes."
+  set {!fish::enchantmentCost::fortune::*} to 250, 1000, 2500, 10000, 25000, 50000, 100000, 250000, 500000, 1000000
+  set {!fish::enchantmentCost::multiplier::*} to 250, 1000, 2500, 10000, 25000, 50000, 100000, 250000, 500000, 1000000
+  set {!fish::enchantmentCost::speed::*} to 250, 1000, 2500, 10000, 25000, 50000, 100000, 250000, 500000, 1000000
+  set {!fish::enchantmentCost::key_finder::*} to 250, 1000, 2500, 10000, 25000, 50000, 100000, 250000, 500000, 1000000
+  set {!fish::enchantmentCost::lootbox_finder::*} to 250, 1000, 2500, 10000, 25000, 50000, 100000, 250000, 500000, 1000000
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+on fish:
+  if "%region at player%" contains "fish":
+
+    if fish state = fishing:
+
+      set {_max} to 7 if fish_getEnchantmentLevel(player's tool, "speed") is 10
+      set {_max} to 8 if fish_getEnchantmentLevel(player's tool, "speed") is 9
+      set {_max} to 9 if fish_getEnchantmentLevel(player's tool, "speed") is 8
+      set {_max} to 10 if fish_getEnchantmentLevel(player's tool, "speed") is 7
+      set {_max} to 11 if fish_getEnchantmentLevel(player's tool, "speed") is 6
+      set {_max} to 12 if fish_getEnchantmentLevel(player's tool, "speed") is 5
+      set {_max} to 13 if fish_getEnchantmentLevel(player's tool, "speed") is 4
+      set {_max} to 14 if fish_getEnchantmentLevel(player's tool, "speed") is 3
+      set {_max} to 15 if fish_getEnchantmentLevel(player's tool, "speed") is 2
+      set {_max} to 16 if fish_getEnchantmentLevel(player's tool, "speed") is 1
+      set {_max} to 17 if fish_getEnchantmentLevel(player's tool, "speed") is 0
+
+      set {_time} to "%{_max}% seconds" parsed as timespan
+      set min wait time of fish hook to 4 seconds
+      set max wait time of fish hook to {_time}
+
+    if fish state = caught fish:
+      set item of fishing caught entity to air
+      fishReward(player)
+      add 1 to {sidequest::quest::3::progress::%uuid of player%}
+      set {_rarity::*} to fishRarity() split at ","
+      set {_weight} to fishWeight(player, {_rarity::2} parsed as number)
+      set {_rarity} to {_rarity::1}
+      set {_price} to ({_weight}*((fish_getEnchantmentLevel(player's tool, "fortune")+1)*1.05))
+      set {_fish} to fishType()
+      add {_price} to {-tokens::%player's uuid%}
+      play sound "entity.evoker.prepare_wololo" to player
+      send "{@Prefix} &8» &7Caught A %{_rarity}% &7Fish At &b%{_weight}%kg &8[&b✦%{_price}%&8]." to player
+
+
+  else:
+    cancel event
+    send action bar "{@Fish} &8» &cYou can only fish at /pond." to player
+    play sound "entity.villager.hurt" to player
+      
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function fishRarity() :: text:
+  if chance of 1%:
+    return "&6&lLEGENDARY,3"
+    stop
+  if chance of 5%:
+    return "&5&lEPIC,2.5"
+    stop
+  if chance of 10%:
+    return "&3&lRARE,2"
+    stop
+  if chance of 20%:
+    return "&2&lUNCOMMON,1.5"
+    stop
+  else:
+    return "&7&lCOMMON,1"
+
+
+function fishWeight(player:player, w:number) :: number:
+  set {_weight} to (random number between 0.5 and 5)
+  set {_weight} to ({_weight}*{_w}*((fish_getEnchantmentLevel({_player}'s tool, "fortune")+1)*1.01))
+  return {_weight}
+
+
+function fishType() :: itemtype:
+  set {_l::*} to raw cod, raw salmon, tropical fish, pufferfish
+  set {_x} to a random element out of {_l::*}
+  return {_x}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function fishReward(player:player):
+
+    set {_charity} to fish_getEnchantmentLevel({_player}'s tool, "charity")
+    if chance of (0.2 * ({_charity}+1)/0.5)%:
+        loop all players:
+            play sound "entity.player_experience.pickup" to all players
+            set {_x} to (random number between 1 and 6)
+            add ({_x}*{multiplier::%loop-player's uuid%}) to {-tokens::%loop-player's uuid%}
+            send "&3&lCodGen &b%{_player}% &7Raised You &b✦%{_x}% &7For Charity!" to loop-player
+        stop
+        
+    set {_key_finder} to fish_getEnchantmentLevel({_player}'s tool, "key_finder")
+    if chance of (1.5 * ({_key_finder}+1)/0.5)%:
+        play sound "entity.player_experience.pickup" to {_player}
+        if chance of 0.01%:
+            give {_player} tripwire hook named {crate::item::rank}
+            send "&3&lCodGen &7You just found a &6Rank Key" to {_player}
+            stop
+        if chance of 1%:
+            give {_player} tripwire hook named {crate::item::monthly}
+            send "&3&lCodGen &7You just found a &3Monthly Key" to {_player}
+            stop
+        if chance of 5%:
+            give {_player} tripwire hook named {crate::item::sculk}
+            send "&3&lCodGen &7You just found a &1Sculk Key" to {_player}
+            stop
+        if chance of 10%:
+            give {_player} tripwire hook named {crate::item::magma}
+            send "&3&lCodGen &7You just found a &4Magma Key" to {_player}
+            stop
+        else:
+            give {_player} tripwire hook named {crate::item::daily}
+            send "&3&lCodGen &7You just found a &2Daily Key" to {_player}
+            stop
+
+    set {_lootbox_finder} to fish_getEnchantmentLevel({_player}'s tool, "lootbox_finder")
+    if chance of (0.1 * ({_lootbox_finder}+1)/0.5)%:
+        play sound "entity.player_experience.pickup" to {_player}
+        if chance of 1%:
+            give {_player} getLootbox("monthly")
+            send "&3&lCodGen &7You just found a &3Monthly Lootbox" to {_player}
+            stop
+        if chance of 5%:
+            give {_player} getLootbox("sculk")
+            send "&3&lCodGen &7You just found a &1Sculk Lootbox" to {_player}
+            stop
+        if chance of 10%:
+            give {_player} getLootbox("magma")
+            send "&3&lCodGen &7You just found a &4Magma Lootbox" to {_player}
+            stop
+        else:
+            give {_player} getLootbox("daily")
+            send "&3&lCodGen &7You just found a &2Daily Lootbox" to {_player}
+            stop
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+command /fish:
+  aliases: /fishing, /pond
+  trigger:
+    teleport player to {pond::location}
+    send action bar "{@Prefix} &8» &eTeleported To The Pond!" to player
+
+
+command /setpond:
+  permission: op
+  trigger:
+    set {pond::location} to location of player
+    send "{@Prefix} &8>> &7Set The Pond Location To You!" to player
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function fish_getrod(player:player) :: itemtype:
+  return fishing rod named "&3%{_player}%'s Fishing Rod" with (nbt compound from "{fishingRod: true}")
+
+
+command /getrod:
+  permission: op
+  trigger:
+    give player fish_getrod(player)
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+on left click with fishing rod:
+  if name of player's tool contains "&3%player%'s Fishing Rod":
+    cancel event
+    openRod(player)
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function openRod(player: player):
+    set {_hoe} to {_player}'s tool
+    set {_lore::*} to lore of {_player}'s tool
+    create gui with virtual chest inventory named "&3Fishing Upgrades" with shape "---------", "-X-12345-", "---------":
+        format gui "-" with gray stained glass pane named " "
+        format gui "X" with {_hoe} with lore {_lore::*}
+        loop integers from 1 to 5:
+            fish_enchantIcon(gui, {_player}, loop-integer)
+    open last gui to {_player}
+
+
+function fish_enchantIcon(gui: gui inventory, player: player, slot: integer):
+    edit {_gui}:
+        set {_id} to fish_getID({!fish::enchantment::%{_slot}%})
+        set {_level} to fish_getEnchantmentLevel({_player}'s tool, {_id})
+        set {_cost} to {!fish::enchantmentCost::%{_id}%::%{_level} + 1%} ? "&cMax"
+        if {_cost} isn't "&cMax":
+            set {_costLore} to "&7Cost: &b✦%format({_cost})%"
+        format gui "%{_slot}%" with {!fish::enchantmentItems::%{_slot}%} named "&7%{!fish::enchantmentPrefix::%{_slot}%}%" with lore " ", "&f%{!fish::enchantmentDescriptions::%{_slot}%}%", " ", "&7Level: &3%{_level}%&7/&310", ({_costLore} ? "&7Cost: &cMax"):
+            if {_cost} is "&cMax":
+                send "{@Prefix} &8» &cThis enchantment is maxed out!" to {_player}
+                play sound "entity.villager.hurt" to {_player}
+                stop
+            if {_cost} > {-tokens::%player's uuid%}:
+                send "{@Prefix} &8» &cInsifficient funds for purchase!" to {_player}
+                play sound "entity.villager.hurt" to {_player}
+                stop
+            remove {_cost} from {-tokens::%player's uuid%}
+            set int tag {_id} of nbt compound from {_player}'s tool to {_level} + 1
+            fish_updatePick({_player})
+            fish_enchantIcon({_gui}, {_player}, {_slot})
+            send "{@Prefix} &8» &7Upgraded to &b%{!fish::enchantment::%{_slot}%}% %{_level} + 1%"
+            play sound "entity.player.levelup" to {_player}
+            openRod({_player})
+
+
+function fish_updatePick(player: player):
+    set {_nbt} to nbt compound from {_player}'s tool
+    {_nbt} has tag "fishingRod"
+    clear lore of ({_player}'s tool)
+    set {_x} to {_player}'s tool
+    loop {!fish::enchantment::*}:
+        set {_level} to int tag fish_getID(loop-value) of {_nbt}
+        {_level} is set
+        {_level} > 0
+        add "&7- &e%loop-value% &8・ &e%{_level}%" to lore of {_x}
+    set {_player}'s held item to ({_x} with all flags hidden)
+
+
+function fish_getEnchantmentLevel(item: item, enchantment: string) :: integer:
+    return (int tag {_enchantment} of (nbt compound from {_item})) ? 0
+
+
+function fish_getID(String: string) :: string:
+    replace all " " with "_" in {_string}
+    return uncolored {_string} in lowercase
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+function fish_purchaserod(player:player):
+  create gui with virtual dropper inventory named "&bPurchase Fishing Rod":
+    format gui slot 4 with fishing rod named "&3%{_player}%'s Fishing Rod" with lore "", "&7» Price: &b✦25", "" and "&f&oClick to purchase.":
+      if {-tokens::%uuid of {_player}%} >= 25:
+        remove 25 from {-tokens::%uuid of {_player}%}
+        give {_player} fish_getrod({_player})
+        send "{@Prefix} &8» &7Purchased &bFishing Rod" to {_player}
+        play sound "entity.player.levelup" to {_player}
+      else:
+        send "{@Prefix} &8» &cInsufficient Funds For Purchase." to {_player}
+        play sound "entity.villager.hurt" to {_player}
+  open last gui to {_player}
+
+
+command /purchaserod:
+  trigger:
+    fish_purchaserod(player)
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+#command /cooler:
+#  trigger:
+#    fish_cooler(player)
+      
+
+function fish_cooler(player:player, page:number=1):
+  loop {cooler::%{_player}'s uuid%::*}:
+    set {_loop::*} to loop-value split at ","
+    add ({_loop::2} parsed as number) to {_totalvalue}
+  set {_upgrade} to ceil(((({cooler::cap::%{_player}'s uuid%}-5)*5)^1.25))
+
+  create gui with virtual chest inventory with size 5 named "&bFishing Cooler &8[&b%size of {cooler::%{_player}'s uuid%::*}%/%{cooler::cap::%{_player}'s uuid%}%&8]":
+    format gui slot (integers between 0 and 60) with gray stained glass pane named "&f"
+    format gui slot (integers between 12 and 16) with light gray stained glass pane named "&f"
+    format gui slot (integers between 21 and 25) with light gray stained glass pane named "&f"
+    format gui slot (integers between 30 and 34) with light gray stained glass pane named "&f"
+    
+    format gui slot 10 with paper named "&bCooler Information" with lore "&7The cooler will contain all fishes you catch." and "&7The cooler has a limited capacity, that can be upgraded."
+
+    format gui slot 19 with fishing rod named "&3Cooler Storage" with lore "", "&7» Storage: &b%size of {cooler::%{_player}'s uuid%::*}%/%{cooler::cap::%{_player}'s uuid%}%", "", "&7» Value: &b✦%format({_totalvalue} ? 0)%", "" and "&f&oClick to sell your cooler.":
+      if size of {cooler::%{_player}'s uuid%::*} > 0:
+        add {_totalvalue} to {-tokens::%uuid of {_player}%}
+        send "{@Prefix} &8» &7Recieved &b✦%{_totalvalue}% &7From Cooler!" to {_player}
+        play sound "entity.player.levelup" to {_player}
+        delete {cooler::%{_player}'s uuid%::*}
+        fish_cooler({_player})
+
+    format gui slot 28 with barrel named "&bCooler Capacity" with lore "", "&7» Current Capacity: &e%{cooler::cap::%{_player}'s uuid%}%", "", "&7» Upgrade: &e%{cooler::cap::%{_player}'s uuid%}% » %({cooler::cap::%{_player}'s uuid%}+5)%", "&7» Upgrade Price: &b✦%format({_upgrade})%", "" and "&f&oClick to upgrade your cooler.":
+      if {-tokens::%uuid of {_player}%} >= {_upgrade}:
+        remove {_upgrade} from {-tokens::%uuid of {_player}%}
+        add 5 to {cooler::cap::%{_player}'s uuid%}
+        send "{@Prefix} &8» &7Upgraded Cooler To Capacity &b%{cooler::cap::%{_player}'s uuid%}%" to {_player}
+        play sound "entity.player.levelup" to {_player}
+        fish_cooler({_player})
+
+    set {_pagestart} to ({_page}*15-14)
+    set {_slot} to 12
+    set {_c} to 1
+    loop {cooler::%{_player}'s uuid%::*}:
+      if {_start} is not set:
+        if {_c} = {_pagestart}:
+          set {_start} to true
+        else:
+          add 1 to {_c} 
+      if {_start} is true:
+        set {_loop::*} to loop-value split at ","
+        format gui slot {_slot} with ({_loop::1} parsed as itemtype) named "&b%Uppercase {_loop::1}%" with lore "", "&7» Rarity: %{_loop::3}%", "&7» Weight: &b%{_loop::4}%kg", "&7» Price: &b✦%{_loop::2}%"
+        add 1 to {_slot}
+        set {_slot} to 21 if {_slot} is 17
+        set {_slot} to 30 if {_slot} is 26
+        stop loop if {_slot} is 35
+
+      if {_page} > 1:
+        format gui slot 40 with red stained glass pane named "&cPrevious Page" with lore "", "&8 » &eClick To Open" and "":
+          fish_cooler(player, ({_page}-1))
+
+      if (size of {cooler::%{_player}'s uuid%::*}) > ({_pagestart}+14):
+        format gui slot 42 with lime stained glass pane named "&aNext Page" with lore "", "&8 » &eClick To Open" and "":
+          fish_cooler(player, ({_page}+1))
+
+  open last gui to {_player}
+
+
+command /clearcooler:
+  permission: op
+  trigger:
+    delete {cooler::%player's uuid%::*}
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+command /fakefish:
+  permission: op
+  trigger:
+
+    fishReward(player)
+    set {_rarity::*} to fishRarity() split at ","
+    set {_weight} to fishWeight(player, {_rarity::2} parsed as number)
+    set {_rarity} to {_rarity::1}
+    set {_price} to ({_weight}*((fish_getEnchantmentLevel(player's tool, "fortune")+1.5)*0.6))
+    set {_fish} to fishType()
+    add ("%{_fish}%,%{_price}%,%{_rarity}%,%{_weight}%") to {cooler::%player's uuid%::*}
+    send "{@Prefix} &8» &7Caught A %{_rarity}% &7Fish At &b%{_weight}%kg &8[&b✦%{_price}%&8]." to player
