@@ -17,9 +17,9 @@ I developed this server mainly by myself, but had minor help of different friend
 This server was not just me though. I had a lot of help from my partner at the time, "MEXIO".
 The server was passed down to a friend of both of us, and has had a lot of remakes and rebranding since then, but is now known as "Enginetic".
 
-· **CodGen** - CodGen is currently the rebranded Enginetic, from last point. 
+· **CodGen** - CodGen is currently the rebranded Enginetic. 
 It has ben transformed into a normal Generator/RPG server and has earned almost 4 figures.
-This server is still up and running, as of January 2024.
+This server was shut down, but made a lot of profits.
 
 
  
@@ -33,7 +33,7 @@ I have now owned and developed a lot of servers, and I'm still an active develop
 
 **__LIFE INFORMATION:__**
 
-I'm currently 16 years old, but I turn 17 in 2024. 
+I'm currently 17 years old. (Born 2007) 
 I was born and raised in Norway, where I currently live. 
-For the momentand, I am able to communicate with other people in Norwegian, English, Dutch, Swedish, Danish & Spanish. 
+I'm experienced & mostly fluent in Norwegian, English, Dutch, Swedish, Danish & Spanish. 
 The only two skript languages I have worked with and are qualified enough with are Skript and Python.
