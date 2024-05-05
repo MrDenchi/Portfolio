@@ -20,12 +20,12 @@ I developed this server mainly by myself, but had minor help of different friend
 ⚡️ **Branding**\
 Branding was my first network server. It started off as a normal plot generator server, but expanded into a network.\
 This server was not just me though. I had a lot of help from my partner at the time, "MEXIO".\
-The server was passed down to a friend of both of us, and has had a lot of remakes and rebranding since then, but is now known as "Enginetic".\
+The server was passed down to a friend of both of us, and has had a lot of remakes and rebranding since then.\
 \
 ⚡️ **CodGen**\
-CodGen is currently the rebranded Enginetic. \
-It has ben transformed into a normal Generator/RPG server and has earned almost 4 figures.\
-This server was shut down, but made a lot of profits.\
+CodGen was the latest rebrand of Branding. \
+It has ben transformed into a normal Generator/RPG server and is the one of my servers that has the biggest profit margins.\
+This server was shut down, but had high profits, and a big community.\
 
 ---
  
