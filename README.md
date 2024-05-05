@@ -31,9 +31,6 @@ I have now owned and developed a lot of servers, and I'm still an active develop
 
 
 
-**__LIFE INFORMATION:__**
+**__PERSONAL INFORMATION:__**
 
-I'm currently 17 years old. (Born 2007) 
-I was born and raised in Norway, where I currently live. 
-I'm experienced & mostly fluent in Norwegian, English, Dutch, Swedish, Danish & Spanish. 
-The only two skript languages I have worked with and are qualified enough with are Skript and Python.
+At 17, hailing from Norway, I'm fluent in Norwegian, English, Dutch, Swedish, Danish, and Spanish. When it comes to coding, I'm skilled in Skript and Python.
