@@ -1,6 +1,6 @@
 ## Server Experiences 📦
 
-⚡️ **Elestra**\ 
+⚡️ **Elestra**\
 Elestra was one of the first and biggest minehut plot generator servers in it's time, but was shut down due to issues with the management team.\
 I worked as a support team member for a long period of time under the names of "Madelyn" and "Stephen".\
 \
