@@ -25,9 +25,9 @@ This server was shut down, but made a lot of profits.\
  
 ## Skript & Development Experiences 🚀
 
-- I started learning skript back in late 2020. I was done with needing other people to skript for me, and I wanted to become independent.
-- It started simple with minehut tutorials, and a lot of errors, but it didn't take me long before I got the hang of it.
-- I have now owned and developed a lot of servers, and I'm still an active developer to this day.
+- I started learning skript in 2020, because I wanted to make something myself, and not rely on others.
+- It started simple with minehut tutorials, and a lot of errors later, I some what got the hang of it.
+- I've now owned and developed plenty of servers, that has made very good profit margins.
 
 ---
 
