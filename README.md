@@ -26,6 +26,12 @@ The server was passed down to a friend of both of us, and has had a lot of remak
 CodGen was the latest rebrand of Branding. \
 It has ben transformed into a normal Generator/RPG server and is the one of my servers that has the biggest profit margins.\
 This server was shut down, but had high profits, and a big community.\
+\
+⚡️ **BrawlMC**\
+BrawlMc was the first server I joined just as a staff member after a really long time just owning servers. \
+It started as a raid generator server then moved in to a network server with events and etc..\
+I started as a helper, but moved to a manager only few days after first playing the server.\
+BrawlMC has reached high peaks with over 1k members on discord and a great average player count.\
 
 ---
  
